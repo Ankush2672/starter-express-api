@@ -23,8 +23,36 @@ module.exports = {
             {
                 console.log("get driver details error",error)
                 res.statusCode= 500;
-                res.json({error : "internal server error",message: "internal server error", reason: error})
+                return res.json({error : "internal server error",message: "internal server error", reason: error})
             }
+
+    },
+    update_password: async(req,res)=>{
+        try{
+        let token_data = await Common_service.jwt_verify_token(req.headers.authorization);
+
+        if(!token_data)
+        {
+            res.statusCode = 403;
+            return res.json({error: "forbideen", message:"not authorized", reason: "not authorized"});
+        }
+        if(!req.body.password)
+        {
+            res.statusCode = 400;
+            return res.json({error: "invalid Json object", message:"Either username and password is missing", reason: "Either username and password is missing"})
+        }
+
+        await modals.users.updateOne({_id : token_data.id},{password: req.body.password});
+
+        res.statusCode = 200;
+        return res.json({message : "password updated Successfully"});
+
+    }catch(error)
+    {
+        console.log("update password error",error)
+        res.statusCode= 500;
+        return res.json({error : "internal server error",message: "internal server error", reason: error})
+    }
 
     },
 }

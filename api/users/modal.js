@@ -33,10 +33,11 @@ const userSchema = new Schema({
 });
 
 userSchema.pre('save', function(next) {
+  console.log("in");
   var user = this;
 
   // only hash the password if it has been modified (or is new)
-  if (!user.isModified('password')) return next();
+   if (!user.isModified('password')) return next();
 
   // generate a salt
   bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
@@ -47,6 +48,29 @@ userSchema.pre('save', function(next) {
           if (err) return next(err);
           // override the cleartext password with the hashed one
           user.password = hash;
+          next();
+      });
+  });
+});
+userSchema.pre('updateOne', function(next) {
+  var user = this;
+  //console.log();
+
+  // only hash the password if it has been modified (or is new)
+  if(!user._update.password)
+  {
+    next();
+  }
+
+  // generate a salt
+  bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+      if (err) return next(err);
+
+      // hash the password using our new salt
+      bcrypt.hash(user._update.password, salt, function(err, hash) {
+          if (err) return next(err);
+          // override the cleartext password with the hashed one
+          user._update.password = hash;
           next();
       });
   });
