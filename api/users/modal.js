@@ -15,8 +15,14 @@ const userSchema = new Schema({
       enum : [1,2,3,4,5]
   },
   mobile_no: String,
-  route_id: String,
-  stop_id: String,
+  route_id: {
+    type : 'ObjectId',
+    ref: 'routes'
+  },
+  stop_id: {
+    type : 'ObjectId',
+    ref: 'stops'
+  },
   fee_status:{
     type: String,
     enum: ["Paid","Unpaid"]

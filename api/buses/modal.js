@@ -3,7 +3,10 @@ const Schema = mongoose.Schema;
 
 const busSchema = new Schema({
   bus_no: String ,
-  driver_id: String,
+  driver_id: {
+    type : 'ObjectId',
+    ref: 'users'
+  },
   bus_type: {
     type: String,
     enum: ["Ac","Non_Ac"]
