@@ -1,5 +1,4 @@
 const modals = require('../../config').modals;
-const commonServices = require('../../services/commonServices');
 const Common_service = require('../../services/commonServices');
 const config = require('../../config');
 
@@ -14,13 +13,13 @@ module.exports = {
             if(!user_exist)
             {
                 res.statusCode = 400;
-                return res.json({error : "bad Request", message: "inavlid Credentials", reason: "invalid credentials"});
+                return res.json({error : "bad Request", message: "invalid Credentials", reason: "invalid credentials"});
             }
             let password_check = await user_exist.comparePassword(password);
             if(!password_check)
             {
                 res.statusCode = 400;
-                return res.json({error : "bad Request", message: "inavlid Credentials", reason: "invalid credentials"});
+                return res.json({error : "bad Request", message: "invalid Credentials", reason: "invalid credentials"});
             }
             let token_payload = {
                 id: user_exist._id,
@@ -55,7 +54,7 @@ module.exports = {
     },
     signup: async(req,res) =>{
         try{
-            
+
              let token_data = await Common_service.jwt_verify_token(req.headers.authorization);
 
                 if(!token_data || token_data.role !== config.roles.superAdmin)
@@ -63,7 +62,11 @@ module.exports = {
                     res.statusCode = 403;
                     return res.json({error: "forbideen", message:"not authorized", reason: "not authorized"});
                 }
-
+                if(req.body.role === config.roles.student)
+                {
+                    req.body.username = req.body.roll_no;
+                }
+                
                 if(!req.body.username || !req.body.password)
                 {
                     res.statusCode = 400;
@@ -76,7 +79,6 @@ module.exports = {
                     res.statusCode = 400;
                     return res.json({error: "User already exists", message:"user already exists", reason: "user already exists"});
                 }
-                
                 await modals.users.create(req.body);
             
                 res.statusCode = 201;
