@@ -1,6 +1,7 @@
 const modals = require('../../config').modals;
 const Common_service = require('../../services/commonServices');
 const config = require('../../config');
+const emailTemplate = require('../../templates/emailTemplate');
 
 module.exports = {
     login: async(req,res) =>{
@@ -80,6 +81,12 @@ module.exports = {
                     return res.json({error: "User already exists", message:"user already exists", reason: "user already exists"});
                 }
                 await modals.users.create(req.body);
+                if(req.body.email)
+                {
+                    let email_template = emailTemplate.accountcreated(req.body.username,req.body.password,req.body.name);
+                    let subject = config.emailSubject.transport_account_created;
+                    await Common_service.sendmail(req.body.email,subject,email_template);
+                }
             
                 res.statusCode = 201;
                 return res.send({message : "user Created successfully"});

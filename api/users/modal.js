@@ -15,6 +15,7 @@ const userSchema = new Schema({
       enum : [1,2,3,4,5]
   },
   mobile_no: String,
+  email : String,
   route_id: {
     type : 'ObjectId',
     ref: 'routes'
@@ -59,7 +60,7 @@ userSchema.pre('updateOne', function(next) {
   // only hash the password if it has been modified (or is new)
   if(!user._update.password)
   {
-    next();
+    return next();
   }
 
   // generate a salt

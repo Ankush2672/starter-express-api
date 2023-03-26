@@ -43,6 +43,9 @@ const config = {
         busIncharge: 3,
         driver: 4,
         student: 5
+    },
+    emailSubject: {
+        transport_account_created : " Transport Account created Successfully"
     }
 }
 
