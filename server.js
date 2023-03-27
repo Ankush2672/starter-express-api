@@ -9,6 +9,7 @@ const buses = require('./api/buses/routes');
 const stopRoute = require('./api/stops/routes');
 const userRoute = require('./api/users/routes');
 const auth_route = require('./api/auth/routes');
+const notification = require('./api/notification/routes');
 
 
 //middleWares 
@@ -23,6 +24,7 @@ app.use('/busRoutes',busRoute);
 app.use('/buses',buses);
 app.use('/stops',stopRoute);
 app.use('/users',userRoute);
+app.use('/notification',notification);
 
 app.get('/', (req, res) => {
   res.send('Hello World!')

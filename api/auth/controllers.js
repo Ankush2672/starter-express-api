@@ -42,7 +42,7 @@ module.exports = {
                 validity: user_exist.validity,
             }
 
-            res.statusCode = 201;
+            res.statusCode = 200;
             return res.json(res_payload);
 
         }catch(error)

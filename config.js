@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
     await mongoose.connect(`mongodb+srv://${process.env.dbUserName}:${process.env.dbPassword}@cluster1.yue1n09.mongodb.net/${process.env.dbName}`);
     console.log("connected to db");
 })();
-
+//gfghfgffgjhfjhfhj
 const config = {
     corsOptions: {
         credentials: true,
