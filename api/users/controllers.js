@@ -55,4 +55,27 @@ module.exports = {
     }
 
     },
+    get_details : async(req,res)=>{
+        try{
+        let token_data = await Common_service.jwt_verify_token(req.headers.authorization);
+
+        if(!token_data)
+        {
+            res.statusCode = 403;
+            return res.json({error: "forbideen", message:"not authorized", reason: "not authorized"});
+        }
+
+        let details = await modals.users.findOne({_id: token_data.id}).select('-password').populate('route_id').populate('stop_id');
+
+        res.statusCode = 200;
+        return res.json(details);
+
+    }catch(error)
+    {
+        console.log("get details error",error)
+        res.statusCode= 500;
+        return res.json({error : "internal server error",message: "internal server error", reason: error})
+    }
+
+    },
 }
