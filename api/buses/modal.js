@@ -11,6 +11,10 @@ const busSchema = new Schema({
     type: String,
     enum: ["Ac","Non_Ac"]
   },
+  bus_route: {
+    type : 'ObjectId',
+    ref: 'routes'
+  },
   bus_number_plate: String,
 });
 
