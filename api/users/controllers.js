@@ -78,4 +78,59 @@ module.exports = {
     }
 
     },
+    id_card: async(req,res)=>{
+        
+        try{
+            let token_data = await Common_service.jwt_verify_token(req.headers.authorization);
+
+            if(!token_data || token_data.role !== config.roles.student)
+            {
+                res.statusCode = 403;
+                return res.json({error: "forbideen", message:"not authorized", reason: "not authorized"});
+            }
+
+            let user_details = await modals.users.findOne({_id: token_data.id}).select('-password').populate('route_id').populate('stop_id');
+            user_details = JSON.parse(JSON.stringify(user_details));
+            let id_card_payload = {
+                name: user_details.name,
+                roll_no: user_details.roll_no,
+                department: user_details.department,
+                mobile: user_details.mobile_no,
+                email: user_details.email,
+                stop: user_details?.stop_id?.stop_name,
+                route: {
+                    route_no: user_details?.route_id?.route_no,
+                    route_name: user_details?.route_id?.route_name
+                },
+                validity: user_details.validity,
+                fee_status : user_details.fee_status,
+                profile : user_details.profileUrl
+            }
+            let bus_details = null;
+            if(user_details?.route_id?._id)
+            {
+                 bus_details = await modals.buses.findOne({bus_route : user_details.route_id._id});
+                bus_details = JSON.parse(JSON.stringify(bus_details));
+            }
+
+            if(bus_details)
+            {
+                id_card_payload.bus_details = {
+                    no : bus_details.bus_no,
+                    number_plate: bus_details.bus_number_plate,
+                    type : bus_details.bus_type
+                }
+            }
+
+                res.statusCode = 200;
+            return res.json(id_card_payload);
+
+
+        }catch(error)
+        {
+            console.log("Id_card error",error);
+            res.statusCode= 500;
+            return res.json({error : "internal server error",message: "internal server error", reason: error});
+        }
+    },
 }
