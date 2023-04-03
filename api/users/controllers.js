@@ -36,13 +36,21 @@ module.exports = {
             res.statusCode = 403;
             return res.json({error: "forbideen", message:"not authorized", reason: "not authorized"});
         }
-        if(!req.body.password)
+        if(!req.body.password || !req.body.new_password)
         {
             res.statusCode = 400;
-            return res.json({error: "invalid Json object", message:"Either username and password is missing", reason: "Either username and password is missing"})
+            return res.json({error: "invalid Json object", message:"Either new_Password OR currrent_password is missing", reason: "Either new_Password OR currrent_password is missing"})
         }
 
-        await modals.users.updateOne({_id : token_data.id},{password: req.body.password});
+        const user = await modals.users.findOne({_id: token_data.id});
+        const password_check = await user.comparePassword(req.body.password);
+
+        if(!password_check){
+            res.statusCode = 400;
+            return res.json({error: "Bad Request", message:"Current password is not correct", reason: "Current password is not correct"});
+        }
+
+        await modals.users.updateOne({_id : token_data.id},{password: req.body.new_password});
 
         res.statusCode = 200;
         return res.json({message : "password updated Successfully"});
