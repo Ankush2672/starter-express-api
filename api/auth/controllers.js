@@ -25,7 +25,8 @@ module.exports = {
             let token_payload = {
                 id: user_exist._id,
                 role: user_exist.role,
-                name: user_exist.name
+                name: user_exist.name,
+                username: user_exist.username
             }
             let auth_token = await Common_service.jwt_Sign_token(token_payload);
 
