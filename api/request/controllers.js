@@ -2,6 +2,7 @@ const modals = require("../../config").modals;
 const Common_service = require("../../services/commonServices");
 const config = require("../../config");
 const { raw } = require("express");
+const emailTemplate = require('../../templates/emailTemplate');
 
 module.exports = {
   add_req: async (req, res) => {
@@ -142,5 +143,35 @@ module.exports = {
       });
       }
   },
- 
+  reject_req: async (req, res) => {
+    try {
+        let token_data = await Common_service.jwt_verify_token(
+          req.headers.authorization
+        );
+  
+        if (!token_data || token_data.role !== config.roles.superAdmin) {
+          res.statusCode = 403;
+          return res.json({
+            error: "forbidden",
+            message: "not authorized",
+            reason: "not authorized",
+          });
+        }
+
+        let requests = await modals.requests.findOneAndUpdate({_id: req.body.requestId},{status:"Rejected"});
+        if(req.body.email)
+                {
+                    let email_template = emailTemplate.requestrejected(req.body.name,req.body.reason);
+                    let subject = config.emailSubject.request_rejected;
+                    await Common_service.sendmail(req.body.email,subject,email_template);
+                }
+            
+                res.statusCode = 201;
+                return res.send({message : "Request Rejected"});
+        res.send(requests);
+        
+      } catch (error) {
+        console.log("Fetching requests error", error);
+      }
+  },
 };

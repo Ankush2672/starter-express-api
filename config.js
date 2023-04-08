@@ -45,7 +45,8 @@ const config = {
         student: 5
     },
     emailSubject: {
-        transport_account_created : " Transport Account created Successfully"
+        transport_account_created : " Transport Account created Successfully",
+        request_rejected: "Unable to fulfil your request"
     }
 }
 
