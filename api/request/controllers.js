@@ -99,7 +99,7 @@ module.exports = {
             reason: "not authorized",
           });
         }
-        let requests = await modals.requests.find({});
+        let requests = await modals.requests.find({}).populate('route_id').populate('stop_id').sort({_id: -1});
         res.send(requests);
       } catch (error) {
         console.log("Fetching requests error", error);
@@ -131,7 +131,7 @@ module.exports = {
           query_payload.department = req.query.department
         }
         console.log(query_payload);
-        let requests = await modals.requests.find(query_payload);
+        let requests = await modals.requests.find(query_payload).populate('route_id').populate('stop_id').sort({_id: -1});
         res.send(requests);
       } catch (error) {
         console.log("Fetching requests error", error);
