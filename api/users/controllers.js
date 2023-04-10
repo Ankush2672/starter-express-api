@@ -141,4 +141,32 @@ module.exports = {
             return res.json({error : "internal server error",message: "internal server error", reason: error});
         }
     },
+    update_status: async(req,res)=>{
+    try{
+        
+        if(!req.body.username)
+        {
+            res.statusCode=400;
+            return res.json({message: "username missing"});
+        }
+        let user_details = await modals.users.findOne({username: req.body.username});
+        console.log(user_details);
+        let update_payload = {
+            fee_status : "Paid",
+        }
+        let increase = req.body.validity * 180;
+       
+        let validity = new Date(user_details.validity);
+        update_payload.validity= validity.setDate(validity.getDate()+ increase);
+
+        await modals.users.updateOne({username: req.body.username},update_payload);
+        res.statusCode = 200;
+        return res.json({message : "Updated successfully"});
+    }catch(error)
+    {
+        console.log("Update status error",error);
+        res.statusCode= 500;
+        return res.json({error : "internal server error",message: "internal server error", reason: error});
+    }
+    },
 }

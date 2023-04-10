@@ -29,7 +29,7 @@ const userSchema = new Schema({
     enum: ["Paid","Unpaid"]
   },
   validity:{
-    type: String,
+    type: Date,
   }
 });
 

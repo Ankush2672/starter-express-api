@@ -1,7 +1,7 @@
 const modals = require('../../config').modals;
 const Common_service = require('../../services/commonServices');
 const config = require('../../config');
-
+const emailTemplate = require('../../templates/emailTemplate');
 module.exports = {
     post_notification : async(req,res)=>{
         try{
@@ -17,6 +17,23 @@ module.exports = {
                 req.body.createdBy = token_data.id;
                 req.body.created_time = Date.now();
 
+                    let users= []
+                    let routes= req.body.routes;
+                    if(!routes)
+                    {
+                        users = await modals.users.find({})
+                    }
+                    else
+                    {
+                        users = await modals.users.find({route_id : routes})
+                    }
+                    const emails = users.map(user => user.email);
+                    if(emails)
+                    {
+                        let email_template = emailTemplate.notify(req.body.message);
+                        let subject = config.emailSubject.notify_user;
+                        await Common_service.sendmail(emails,subject,email_template);
+                    }
                 await modals.notifications.create(req.body);
 
                 res.json({message : "Notification posted Successfully"});

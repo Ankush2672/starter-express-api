@@ -46,7 +46,8 @@ const config = {
     },
     emailSubject: {
         transport_account_created : " Transport Account created Successfully",
-        request_rejected: "Unable to fulfil your request"
+        request_rejected: "Unable to fulfil your request",
+        notify_user:"!!! Important !!!"
     }
 }
 

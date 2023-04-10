@@ -81,6 +81,16 @@ module.exports = {
                     res.statusCode = 400;
                     return res.json({error: "User already exists", message:"user already exists", reason: "user already exists"});
                 }
+                if(req.body.validity){
+                let increase = req.body.validity * 183;
+       
+                let validity = new Date();
+                req.body.validity= validity.setDate(validity.getDate()+ increase);
+                }
+                if(req.body.role == config.roles.student)
+                {
+                 req.body.fee_status = "Paid"
+                }
                 await modals.users.create(req.body);
                 if(req.body.email)
                 {
@@ -89,7 +99,7 @@ module.exports = {
                     await Common_service.sendmail(req.body.email,subject,email_template);
                 }
             
-                res.statusCode = 201;
+                res.statusCode = 200;
                 return res.send({message : "user Created successfully"});
         }catch(error)
         {

@@ -3,6 +3,8 @@ const Common_service = require("../../services/commonServices");
 const config = require("../../config");
 const { raw } = require("express");
 const emailTemplate = require('../../templates/emailTemplate');
+const {signup} = require('../auth/controllers');
+const {update_status} = require('../users/controllers');
 
 module.exports = {
   add_req: async (req, res) => {
@@ -65,7 +67,7 @@ module.exports = {
               }
               req.body.request = "Creation";
           }
-    if(!req.file.location)
+    if(!req?.file?.location)
     {
       res.statusCode = 400;
       return res.json({error: "Bad Request",message: "image not uploaded successfully",reason: "image not uploaded successfully",});
@@ -168,10 +170,54 @@ module.exports = {
             
                 res.statusCode = 201;
                 return res.send({message : "Request Rejected"});
-        res.send(requests);
         
       } catch (error) {
         console.log("Fetching requests error", error);
       }
+  },
+  approve_request: async(req,res)=>{
+    try {
+      let token_data = await Common_service.jwt_verify_token(
+        req.headers.authorization
+      );
+
+      if (!token_data || token_data.role !== config.roles.superAdmin) {
+        res.statusCode = 403;
+        return res.json({
+          error: "forbidden",
+          message: "not authorized",
+          reason: "not authorized",
+        });
+      }
+      let response;
+      if(req.body.request==="Creation")
+      {
+         response = await signup(req,res);
+      }
+      if(req.body.request === "Updation")
+      {
+        response =  await update_status(req,res);
+      }
+      response = await response.json();
+      if(response.statusCode == 200)
+      {
+        return await modals.requests.findOneAndUpdate({_id: req.body.requestId},{status:"Approved"});
+      }
+      if(!response)
+      {
+      res.statusCode = 400;
+     return res.json({error : "request type missing"});
+      }
+      
+    } catch (error) {
+      console.log("approve requests error", error);
+      res.statusCode = 500;
+      return res.json({
+        error: "internal server error",
+        message: "internal server error",
+        reason: error,
+      });
+    }
+
   },
 };
