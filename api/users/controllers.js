@@ -154,10 +154,14 @@ module.exports = {
         let update_payload = {
             fee_status : "Paid",
         }
-        let increase = req.body.validity * 180;
-       
+        let increase = req.body.validity * 180 || 1;
+        if(user_details.validity){
         let validity = new Date(user_details.validity);
         update_payload.validity= validity.setDate(validity.getDate()+ increase);
+        }else{
+            let validity = new Date();
+                update_payload.validity= validity.setDate(validity.getDate()+ increase);
+        }
 
         await modals.users.updateOne({username: req.body.username},update_payload);
         res.statusCode = 200;

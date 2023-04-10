@@ -134,7 +134,8 @@ module.exports = {
         }
         console.log(query_payload);
         let requests = await modals.requests.find(query_payload).populate('route_id').populate('stop_id').sort({_id: -1});
-        res.send(requests);
+        res.statusCode = 200;
+        return res.json(requests);
       } catch (error) {
         console.log("Fetching requests error", error);
         res.statusCode = 500;
