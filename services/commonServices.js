@@ -38,7 +38,7 @@ module.exports = {
 
           let info = await transporter.sendMail({
             from: '"Piet College" <info@piet.co.in>', // sender address
-            to: email, // list of receivers
+            bcc: email, // list of receivers
             subject: subject, // Subject line
             // text: "Hello world?", // plain text body
             html: template, // html body
